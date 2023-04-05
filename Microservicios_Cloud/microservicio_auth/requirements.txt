@@ -11,3 +11,4 @@ marshmallow-sqlalchemy
 redis
 requests
 SQLAlchemy
+py7zr
