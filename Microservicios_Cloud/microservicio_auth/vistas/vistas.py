@@ -1,11 +1,9 @@
 from flask_restful import Resource
 from ..modelos import Usuario, db, Tareas, TareasSchema
+from ..tareas import convert_file
 from flask_jwt_extended import jwt_required, create_access_token, get_jwt_identity
 from flask import request
 import os
-import zipfile
-import py7zr
-import tarfile
 
 tareas_schema = TareasSchema()
 
@@ -72,39 +70,15 @@ class VistaTasks(Resource):
         file = request.files.get('fileName')
         new_format = request.form.get('newFormat')
         user_id = get_jwt_identity()
-        if not os.path.exists('archivos'):
+        if not os.path.exists('archivos/originales'):
             os.makedirs('archivos/originales')
         file_name = file.filename
         file.save(os.path.join('archivos/originales', file_name))
-        nueva_tarea = Tareas(fileName = file_name, newFormat = new_format, status = 'uploaded', usuario = user_id)
+        nueva_tarea = Tareas(fileName=file_name, newFormat=new_format, status='uploaded', usuario=user_id)
         db.session.add(nueva_tarea)
         db.session.commit()
-        # Descomentar el siguiente return cuando la logica posterior se pase a colas
-        # return {'message': 'la tarea fue creada.'}
-    
-        # Todo el siguiente bloque debe ir en colas
-        if not os.path.exists('archivos/convertidos'):
-            os.makedirs('archivos/convertidos')     
-        if new_format == 'ZIP':
-            file_path = os.path.join('archivos/originales', file_name)
-            zip_file_path = os.path.join('archivos/convertidos', file_name + '.zip')
-            with zipfile.ZipFile(zip_file_path, 'w', zipfile.ZIP_DEFLATED) as zip_file:
-                zip_file.write(file_path, file_name)
-        elif new_format == '7Z':
-            file_path = os.path.join('archivos/originales', file_name)
-            seven_zip_file_path = os.path.join('archivos/convertidos', file_name + '.7z')
-            with py7zr.SevenZipFile(seven_zip_file_path, 'w') as seven_zip_file:
-                seven_zip_file.write(file_path, file_name)
-        elif new_format == 'TAR.GZ':
-            file_path = os.path.join('archivos/originales', file_name)
-            tar_gz_file_path = os.path.join('archivos/convertidos', file_name + '.tar.gz')
-            with tarfile.open(tar_gz_file_path, 'w:gz') as tar_gz_file:
-                tar_gz_file.add(file_path, file_name)
-        else:
-            return {'message': 'Formato no soportado'}
-        nueva_tarea.status = 'processed'
-        db.session.commit()
-        return {'message': 'Archivo recibido y procesado correctamente.'}
+        convert_file.delay(nueva_tarea.id)
+        return {'message': 'la tarea fue creada.'}
 
 
 class VistaTask(Resource):

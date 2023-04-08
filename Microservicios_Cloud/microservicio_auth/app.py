@@ -1,17 +1,10 @@
 from microservicio_auth import create_app
 from flask_restful import Api
 from .vistas import VistaAuthSignup, VistaLogin, VistaTasks, VistaTask
-from .modelos import db
 from flask_jwt_extended import JWTManager
-
+from .modelos import db
 
 app = create_app('default')
-app_context = app.app_context()
-app_context.push()
-
-app.config['JWT_SECRET_KEY'] = 'frase-secreta'
-
-db.init_app(app)
 db.create_all()
 
 api = Api(app)
