@@ -2,7 +2,7 @@ from flask_restful import Resource
 from ..modelos import Usuario, db, Tareas, TareasSchema
 from ..tareas import convert_file
 from flask_jwt_extended import jwt_required, create_access_token, get_jwt_identity
-from flask import request
+from flask import request, send_file
 import os
 
 tareas_schema = TareasSchema()
@@ -97,3 +97,18 @@ class VistaTask(Resource):
         db.session.delete(tarea)
         db.session.commit()
         return {'message': 'Tarea y archivos eliminados correctamente.'}
+    
+
+    @jwt_required()
+    def get(self, id_task):
+        tarea = Tareas.query.get_or_404(id_task)
+        return  tareas_schema.dump(tarea)
+    
+    @jwt_required()
+    def post(self, id_task):
+        tarea = Tareas.query.get_or_404(id_task)
+        if (int(request.json["status"]) == 0):
+            return send_file('archivos/originales/'+tarea.fileName, as_attachment=True)
+        elif (int(request.json["status"]) == 1 and tarea.status=='processed'):
+            return send_file('archivos/convertidos/'+tarea.fileName+'.'+ (tarea.newFormat).lower(), as_attachment=True)
+        return {'message':'Se debe seleccionar la tareas a realizar 0 para descargar el archivo original, 1 para descargar el archivo convertido, si eligión el convertido, y no descargó es porque no ha procesado'}
