@@ -11,13 +11,13 @@ tareas_schema = TareasSchema()
 
 def validateStrongPassword(password):
     if len(password) < 8:
-        return False, "El password debe tener al menos 8 caracteres."
+        return False
 
     if not any(c.isupper() for c in contrasena):
-        return False, "La contraseña debe tener al menos una letra mayúscula."
+        return False
 
     if not any(c.isdigit() for c in contrasena):
-        return False, "La contraseña debe tener al menos un número."
+        return False
 
     return True
 
@@ -31,7 +31,7 @@ class VistaAuthSignup(Resource):
         validate_passwd = validateStrongPassword(request.json["password1"])
 
         if not validate_passwd:
-            return "El password ingresado no cumple con los requesitos minimos de seguridad", 400
+            return "El password ingresado no cumple con los requisitos minimos de seguridad. Debe tener al menos 8 caracteres, debe tener al menos una letra mayúscula, debe tener al menos un número ", 400
 
         elif (request.json["password1"] != request.json["password2"]):
             return "El password ingresado No coincide", 404
@@ -44,7 +44,8 @@ class VistaAuthSignup(Resource):
                 return "El correo ingresado {} ya existe".format(request.json["email"]), 404
             else:
                 nuevo_usuario = Usuario(username=request.json["username"],
-                                        password=request.json["password1"],
+                                        password=hashlib.md5(
+                                            request.json["password1"].encode('utf-8')).hexdigest(),
                                         email=request.json["email"]
                                         )
                 db.session.add(nuevo_usuario)
