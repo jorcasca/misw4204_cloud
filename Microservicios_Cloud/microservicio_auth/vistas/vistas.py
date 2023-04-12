@@ -60,7 +60,8 @@ class VistaLogin(Resource):
         usuario = Usuario.query.filter(
             or_(Usuario.username == request.json.get("username"),
                 Usuario.email == request.json.get("username")),
-            Usuario.password == request.json.get("password")
+            Usuario.password == hashlib.md5(
+                request.json["password"].encode('utf-8')).hexdigest()
         ).first()
         db.session.commit()
         if usuario is None:
