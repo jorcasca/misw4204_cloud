@@ -4,6 +4,7 @@ from ..tareas import convert_file
 from flask_jwt_extended import jwt_required, create_access_token, get_jwt_identity
 from flask import request, send_file
 from sqlalchemy import or_
+import hashlib
 import os
 
 tareas_schema = TareasSchema()
