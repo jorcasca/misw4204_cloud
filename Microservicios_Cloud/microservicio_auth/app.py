@@ -1,6 +1,6 @@
 from microservicio_auth import create_app
 from flask_restful import Api
-from .vistas import VistaAuthSignup, VistaLogin, VistaTasks, VistaTask
+from .vistas import VistaAuthSignup, VistaLogin, VistaTasks, VistaTask, VistaFile
 from flask_jwt_extended import JWTManager
 from .modelos import db
 
