@@ -141,10 +141,10 @@ class VistaFile(Resource):
     @jwt_required()
     def get(self, filename):
         try:
-            nombre, extension = os.path.splitext(filename)
-            if extension:
-                return send_file('archivos/convertidos/'+filename, as_attachment=True)
-            else:
+            return send_file('archivos/convertidos/'+filename, as_attachment=True)
+
+        except:
+            try:
                 return send_file('archivos/originales/'+filename, as_attachment=True)
-        except FileNotFoundError:
-            abort(404)
+            except FileNotFoundError:
+                return "No se pudo encontrar el archivo", 404
