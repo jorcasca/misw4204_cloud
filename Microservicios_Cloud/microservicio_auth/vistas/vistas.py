@@ -14,10 +14,10 @@ def validateStrongPassword(password):
     if len(password) < 8:
         return False
 
-    if not any(c.isupper() for c in contrasena):
+    if not any(c.isupper() for c in password):
         return False
 
-    if not any(c.isdigit() for c in contrasena):
+    if not any(c.isdigit() for c in password):
         return False
 
     return True
@@ -142,7 +142,6 @@ class VistaFile(Resource):
     def get(self, filename):
         try:
             return send_file('archivos/convertidos/'+filename, as_attachment=True)
-
         except:
             try:
                 return send_file('archivos/originales/'+filename, as_attachment=True)
