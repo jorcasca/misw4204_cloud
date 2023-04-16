@@ -12,3 +12,4 @@ redis
 requests
 SQLAlchemy
 py7zr
+psycopg2-binary
