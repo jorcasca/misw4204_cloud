@@ -5,6 +5,7 @@ from flask_jwt_extended import jwt_required, create_access_token, get_jwt_identi
 from flask import request, send_file
 from sqlalchemy import or_
 import hashlib
+import requests
 import os
 
 tareas_schema = TareasSchema()
@@ -107,7 +108,8 @@ class VistaTasks(Resource):
             fileName=file_name, newFormat=new_format, status='uploaded', usuario=user_id)
         db.session.add(nueva_tarea)
         db.session.commit()
-        convert_file.delay(nueva_tarea.id)
+        requests.get("http://localhost:5002/api/tasks/{}".format(nueva_tarea.id))
+        #convert_file.delay(nueva_tarea.id)
         return {'message': 'la tarea fue creada.'}
 
 

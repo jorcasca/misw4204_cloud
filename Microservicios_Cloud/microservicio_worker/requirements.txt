@@ -1,0 +1,15 @@
+itsdangerous
+Werkzeug
+amqp
+celery
+Flask
+Flask-JWT-Extended
+Flask-RESTful
+Flask-SQLAlchemy
+marshmallow
+marshmallow-sqlalchemy
+redis
+requests
+SQLAlchemy
+py7zr
+psycopg2-binary
