@@ -100,10 +100,10 @@ class VistaTasks(Resource):
         file = request.files.get('fileName')
         new_format = request.form.get('newFormat')
         user_id = get_jwt_identity()
-        if not os.path.exists('archivos/originales'):
-            os.makedirs('archivos/originales')
+        if not os.path.exists('/nfs/archivos/originales'):
+            os.makedirs('/nfs/archivos/originales')
         file_name = file.filename
-        file.save(os.path.join('archivos/originales', file_name))
+        file.save(os.path.join('/nfs/archivos/originales', file_name))
         nueva_tarea = Tareas(
             fileName=file_name, newFormat=new_format, status='uploaded', usuario=user_id)
         db.session.add(nueva_tarea)
@@ -121,9 +121,9 @@ class VistaTask(Resource):
         if tarea.status != 'processed':
             return {'message': 'La tarea no ha sido procesada aún'}, 400
         archivo_original_path = os.path.join(
-            'archivos/originales', tarea.fileName)
+            '/nfs/archivos/originales', tarea.fileName)
         archivo_convertido_path = os.path.join(
-            'archivos/convertidos', tarea.fileName + '.' + tarea.newFormat.lower())
+            '/nfs/archivos/convertidos', tarea.fileName + '.' + tarea.newFormat.lower())
         if os.path.exists(archivo_original_path):
             os.remove(archivo_original_path)
         if os.path.exists(archivo_convertido_path):
@@ -143,9 +143,9 @@ class VistaFile(Resource):
     @jwt_required()
     def get(self, filename):
         try:
-            return send_file('archivos/convertidos/'+filename, as_attachment=True)
+            return send_file('/nfs/archivos/convertidos/'+filename, as_attachment=True)
         except:
             try:
-                return send_file('archivos/originales/'+filename, as_attachment=True)
+                return send_file('/nfs/archivos/originales/'+filename, as_attachment=True)
             except FileNotFoundError:
                 return "No se pudo encontrar el archivo", 404
