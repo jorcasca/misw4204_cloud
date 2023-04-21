@@ -108,7 +108,7 @@ class VistaTasks(Resource):
             fileName=file_name, newFormat=new_format, status='uploaded', usuario=user_id)
         db.session.add(nueva_tarea)
         db.session.commit()
-        requests.get("http://localhost:5002/api/tasks/{}".format(nueva_tarea.id))
+        requests.get("http://34.27.21.166:5000/api/tasks/{}".format(nueva_tarea.id))
         #convert_file.delay(nueva_tarea.id)
         return {'message': 'la tarea fue creada.'}
 
