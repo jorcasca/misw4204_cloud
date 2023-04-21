@@ -15,22 +15,22 @@ def convert_file(tarea_id):
             return f'La tarea con id {tarea_id} no existe.'
         file_name = tarea.fileName
         new_format = tarea.newFormat
-        if not os.path.exists('microservicio_auth/archivos/convertidos'):
-            os.makedirs('microservicio_auth/archivos/convertidos')
+        if not os.path.exists('/nfs/archivos/convertidos'):
+            os.makedirs('/nfs/archivos/convertidos')
         try:
             if new_format == 'ZIP':
-                file_path = os.path.join('microservicio_auth/archivos/originales', file_name)
-                zip_file_path = os.path.join('microservicio_auth/archivos/convertidos', file_name + '.zip')
+                file_path = os.path.join('/nfs/archivos/originales', file_name)
+                zip_file_path = os.path.join('/nfs/archivos/convertidos', file_name + '.zip')
                 with zipfile.ZipFile(zip_file_path, 'w', zipfile.ZIP_DEFLATED) as zip_file:
                     zip_file.write(file_path, file_name)
             elif new_format == '7Z':
-                file_path = os.path.join('microservicio_auth/archivos/originales', file_name)
-                seven_zip_file_path = os.path.join('microservicio_auth/archivos/convertidos', file_name + '.7z')
+                file_path = os.path.join('/nfs/archivos/originales', file_name)
+                seven_zip_file_path = os.path.join('/nfs/archivos/convertidos', file_name + '.7z')
                 with py7zr.SevenZipFile(seven_zip_file_path, 'w') as seven_zip_file:
                     seven_zip_file.write(file_path, file_name)
             elif new_format == 'TAR.GZ':
-                file_path = os.path.join('microservicio_auth/archivos/originales', file_name)
-                tar_gz_file_path = os.path.join('microservicio_auth/archivos/convertidos', file_name + '.tar.gz')
+                file_path = os.path.join('/nfs/archivos/originales', file_name)
+                tar_gz_file_path = os.path.join('/nfs/archivos/convertidos', file_name + '.tar.gz')
                 with tarfile.open(tar_gz_file_path, 'w:gz') as tar_gz_file:
                     tar_gz_file.add(file_path, file_name)
             else:
