@@ -1,15 +1,15 @@
 from flask_restful import Resource
 from ..modelos import Usuario, db, Tareas, TareasSchema
-from ..tareas import convert_file
 from flask_jwt_extended import jwt_required, create_access_token, get_jwt_identity
 from flask import request, send_file
 from sqlalchemy import or_
 import hashlib
 import requests
 import os
+from google.cloud import storage
 
 tareas_schema = TareasSchema()
-
+storage_client = storage.Client()
 
 def validateStrongPassword(password):
     if len(password) < 8:
@@ -100,16 +100,18 @@ class VistaTasks(Resource):
         file = request.files.get('fileName')
         new_format = request.form.get('newFormat')
         user_id = get_jwt_identity()
-        if not os.path.exists('archivos/originales'):
-            os.makedirs('archivos/originales')
         file_name = file.filename
-        file.save(os.path.join('archivos/originales', file_name))
         nueva_tarea = Tareas(
             fileName=file_name, newFormat=new_format, status='uploaded', usuario=user_id)
         db.session.add(nueva_tarea)
         db.session.commit()
-        requests.get("http://34.27.21.166:5000/api/tasks/{}".format(nueva_tarea.id))
-        #convert_file.delay(nueva_tarea.id)
+        
+        bucket_name = '<BUCKET_NAME>'
+        bucket = storage_client.bucket(bucket_name)
+        blob = bucket.blob('archivos/originales/{}'.format(file_name))
+        blob.upload_from_file(file)
+        requests.get("http://<WORKER_SERVER_IP>/api/tasks/{}".format(nueva_tarea.id))
+        
         return {'message': 'la tarea fue creada.'}
 
 
@@ -142,10 +144,22 @@ class VistaFile(Resource):
 
     @jwt_required()
     def get(self, filename):
+        bucket_name = '<BUCKET_NAME>'
+        bucket = storage_client.get_bucket(bucket_name)
         try:
-            return send_file('archivos/convertidos/'+filename, as_attachment=True)
+            blob = bucket.blob('archivos/convertidos/{}'.format(filename))
+            blob.download_to_filename(filename)
+            return send_file(filename, as_attachment=True)
         except:
             try:
-                return send_file('archivos/originales/'+filename, as_attachment=True)
+                blob = bucket.blob('archivos/originales/{}'.format(filename))
+                blob.download_to_filename(filename)
+                return send_file(filename, as_attachment=True)
             except FileNotFoundError:
                 return "No se pudo encontrar el archivo", 404
+            finally:
+                if os.path.exists(filename):
+                    os.remove(filename)
+        finally:
+            if os.path.exists(filename):
+                os.remove(filename)
