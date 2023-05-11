@@ -4,9 +4,9 @@ from flask_jwt_extended import jwt_required, create_access_token, get_jwt_identi
 from flask import request, send_file
 from sqlalchemy import or_
 import hashlib
-import requests
 import os
 from google.cloud import storage
+from google.cloud import pubsub_v1
 
 tareas_schema = TareasSchema()
 storage_client = storage.Client()
@@ -110,7 +110,14 @@ class VistaTasks(Resource):
         bucket = storage_client.bucket(bucket_name)
         blob = bucket.blob('archivos/originales/{}'.format(file_name))
         blob.upload_from_file(file)
-        requests.get("http://<WORKER_SERVER_IP>/api/tasks/{}".format(nueva_tarea.id))
+        
+        project_id = "<PROJECT_ID>"
+        topic_name = "<TOPIC_NAME>"
+        publisher = pubsub_v1.PublisherClient()
+        topic_path = publisher.topic_path(project_id, topic_name)
+        message_data = str(nueva_tarea.id)
+        message_bytes = message_data.encode('utf-8')
+        publisher.publish(topic_path, data=message_bytes)
         
         return {'message': 'la tarea fue creada.'}
 
