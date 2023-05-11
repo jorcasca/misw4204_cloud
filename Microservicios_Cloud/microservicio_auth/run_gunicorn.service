@@ -5,8 +5,8 @@ After=network.target
 [Service]
 User=rodolfo_celcam
 Group=www-data
-WorkingDirectory=/home/rodolfo_celcam/misw4204_cloud
-ExecStart=/home/rodolfo_celcam/misw4204_cloud/run_gunicorn.sh
+WorkingDirectory=<PATH_TO_PROJECT>/misw4204_cloud
+ExecStart=./Microservicios_Cloud/microservicio_auth/run_gunicorn.sh
 
 [Install]
 WantedBy=multi-user.target
