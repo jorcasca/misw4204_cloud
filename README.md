@@ -56,35 +56,30 @@ createdb baseapp
 # 3. Configurar WORKER_SERVER
 
 **3.1** Clonar el presente proyecto.  
-**3.2** Ingresar al proyecto clonado y crear un entorno de desarrollo.  
+**3.2** Ingresar al proyecto clonado y crear un entorno de desarrollo en la ruta misw4204_cloud.  
 `python3 -m venv venv`  
 **3.3** Activar entorno.  
 `source venv/bin/activate`  
-**3.4** Instalar dependencias.  
-`py -m pip install -r requirements.txt`  
-**3.5** En el archivo __init__.py de la ruta  misw4204_cloud/Microservicios_Cloud/microservicio_worker, modificar la dirección del POSTGRES_SERVER.
+**3.4** Instalar dependencias de la ruta misw4204_cloud/Microservicios_Cloud/microservicio_worker.  
+`python3 -m pip install -r requirements.txt`  
+**3.5** En el archivo app.py de la ruta misw4204_cloud/Microservicios_Cloud/microservicio_worker, modificar la dirección del POSTGRES_SERVER.
 ```bash
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://baseapp:contrasena123@<POSTGRES_SERVER_IP>/baseapp'
+engine = create_engine('postgresql://postgres:contrasena123@<POSTGRES_SERVER_IP>/baseapp')
 ```  
-**3.6** En el archivo tareas.py de la ruta misw4204_cloud\Microservicios_Cloud\microservicio_worker\tareas, modificar el nombre del BUCKET_NAME con el nombre del bucket creado en Cloud Storage.  
-**3.7** Ejecutar gestor de colas ejecutando el siguiente comando en la ruta misw4204_cloud/Microservicios_Cloud.  
-`celery -A microservicio_worker.tareas worker -l info`  
-**3.8** Ejecutar app del WORKER_SERVER en la ruta misw4204_cloud/Microservicios_Cloud/microservicio_worker.  
-`flask run`  
-**3.9** Una vez confirme todo corre perfectamente, baje esos servicios CTRL+C.  
-**3.10** En los archivos run_celery.sh y run_gunicorn.sh, actualice GOOGLE_CREDENTIALS_PATH con las credenciales de Google para acceder al servicio como se mencionó en el punto 2.  
-**3.11** Ubique los archivos run_celery.service y run_unicorn.service en /etc/systemctl/system/ para arrancar los servicios.  
-**3.12** Debe activar los servicios con los siguientes comandos: 
+**3.6** En el archivo app.py de la ruta misw4204_cloud\Microservicios_Cloud\microservicio_worker, modificar el nombre del BUCKET_NAME con el nombre del bucket creado en Cloud Storage, PROJECT_ID con el id del proyecto de GCP y SUB_NAME con el nombre de la subscripción en PUB/SUB.  
+**3.7** En el archivo run_worker.service, actualice PATH_TO_PROJECT con la ruta del proyecto misw4204_cloud y MACHINE_USER con el usuario de la maquina.  
+NOTA: Ejecutar para darle permisos de ejecución.  
+**3.8** En el archivo run_worker.sh, actualice GOOGLE_CREDENTIALS_PATH con las credenciales de Google para acceder al servicio como se mencionó en el punto 2.  
+NOTA: Ejecutar para darle permisos de ejecución.  
+```  
+sudo chmod +x run_worker.sh  
+```  
+**3.9** Ubique el archivo run_worker.service en /etc/systemd/system/ para arrancar los servicios.  
+**3.10** Debe activar los servicios con los siguientes comandos: 
 ```bash
-sudo systemctl start run_celery.service
-sudo systemctl enable run_celery.service
-sudo systemctl start run_gunicorn.service
-sudo systemctl enable run_gunicorn.service
+sudo systemctl start run_worker.service
+sudo systemctl enable run_worker.service
 ```  
-**3.13** Mueva el archivo microservicio_worker_site a /etc/nginx/sites-avaliable de esta manera se mapeara el servicio de gunicorn que esta por defecto en 8000 por medio de nginx escuhando por el 80.  
-
-NOTA: Es importante que el servicio NGINX se active por lo que es posible deba seguir este tutoria:
-[Tutorial](https://www.digitalocean.com/community/tutorials/how-to-serve-flask-applications-with-gunicorn-and-nginx-on-ubuntu-20-04)  
 
 # 4. Configurar WEB_SERVER
 
@@ -94,31 +89,34 @@ NOTA: Es importante que el servicio NGINX se active por lo que es posible deba s
 **4.3** Activar entorno.  
 `source venv/bin/activate`  
 **4.4** Instalar dependencias.  
-`py -m pip install -r requirements.txt`  
+`python3 -m pip install -r requirements.txt`  
 **4.5** En el archivo __init__.py de la ruta misw4204_cloud/Microservicios_Cloud/microservicio_auth, modificar la dirección del POSTGRES_SERVER.
 ```bash
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://baseapp:contrasena123@<POSTGRES_SERVER_IP>/baseapp'
 ```
-**4.6** En el archivo vistas.py de la ruta misw4204_cloud/Microservicios_Cloud/microservicio_auth, modificar la dirección del WORKER_SERVER y BUCKET_NAME.
-```bash
-bucket_name = '<BUCKET_NAME>'
-requests.get("<WORKER_SERVER_IP>:5000/api/tasks/{}".format(nueva_tarea.id))
-```
+**4.6** En el archivo vistas.py de la ruta misw4204_cloud/Microservicios_Cloud/microservicio_auth, modificar BUCKET_NAME con el nombre del bucket creado en Cloud Storage, PROJECT_ID con el id del proyecto de GCP y TOPIC_NAME con el nombre del topic en PUB/SUB.  
 **4.7** Ejecutar app del WEB_SERVER en la ruta misw4204_cloud/Microservicios_Cloud/microservicio_worker.  
 `flask run`  
 **4.8** Una vez confirme todo corre perfectamente, baje esos servicios CTRL+C.  
 **4.9** En el archivo run_gunicorn.sh, actualice GOOGLE_CREDENTIALS_PATH con las credenciales de Google para acceder al servicio como se mencionó en el punto 2.  
-**4.10** Ubique el archivo run_unicorn.service en /etc/systemctl/system/ para arrancar los servicios.  
-**4.11** Debe activar los servicios con los siguientes comandos: 
+NOTA: Ejecutar para darle permisos de ejecución.  
+```  
+sudo chmod +x run_gunicorn.sh  
+```  
+**4.10** En el archivo run_gunicorn.service, actualice PATH_TO_PROJECT con la ruta del proyecto misw4204_cloud y MACHINE_USER con el usuario de la maquina.  
+NOTA: Ejecutar para darle permisos de ejecución.  
+**4.11** Ubique el archivo run_gunicorn.service en /etc/systemd/system/ para arrancar los servicios.  
+**4.12** Debe activar los servicios con los siguientes comandos: 
 ```bash
 sudo systemctl start run_gunicorn.service
 sudo systemctl enable run_gunicorn.service
 ```  
-**4.12** Mueva el archivo microservicio_auth_site a /etc/nginx/sites-avaliable de esta manera se mapeara el servicio de gunicorn que esta por defecto en 8000 por medio de nginx escuhando por el 80.  
+**4.13** Mueva el archivo microservicio_auth_site a /etc/nginx/sites-avaliable de esta manera se mapeara el servicio de gunicorn que esta por defecto en 8000 por medio de nginx escuhando por el 80.  
 
 NOTA: Es importante que el servicio NGINX se active por lo que es posible deba seguir este tutoria:
 [Tutorial](https://www.digitalocean.com/community/tutorials/how-to-serve-flask-applications-with-gunicorn-and-nginx-on-ubuntu-20-04)  
-
+NOTA: por defecto NGINX crea un site default en /etc/nginx/sites-avaliable, es importante que cambie el puerto de escucha por defecto de ese site de 80 a otro puerto, de lo contrario tendrá conflictos al ejecutar
+sudo nginx -t  
 # 5. Evidencia
 Load balancer respondiendo correctamente:  
 ![image](https://user-images.githubusercontent.com/31069035/236659966-343fbaf1-785e-402e-ba19-f9abb4ffb448.png)
