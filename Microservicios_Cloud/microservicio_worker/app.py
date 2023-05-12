@@ -53,7 +53,7 @@ def callback(message):
         
     try:
         print(f'DOWNLOADING... {file_name} from bucket')
-        bucket_name = 'miso_bucket_cloud'
+        bucket_name = '<BUCKET_NAME>'
         bucket = storage_client.get_bucket(bucket_name)
         blob = bucket.blob('archivos/originales/{}'.format(file_name))
         blob.download_to_filename('microservicio_worker/archivos/originales/{}'.format(file_name))
