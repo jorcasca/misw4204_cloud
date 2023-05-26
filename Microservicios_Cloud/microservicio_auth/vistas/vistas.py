@@ -1,10 +1,11 @@
 from flask_restful import Resource
-from ..modelos import Usuario, db, Tareas, TareasSchema
+from modelos.modelos import Usuario, db, Tareas, TareasSchema
 from flask_jwt_extended import jwt_required, create_access_token, get_jwt_identity
 from flask import request, send_file
 from sqlalchemy import or_
 import hashlib
 import os
+import uuid
 from google.cloud import storage
 from google.cloud import pubsub_v1
 
@@ -100,7 +101,7 @@ class VistaTasks(Resource):
         file = request.files.get('fileName')
         new_format = request.form.get('newFormat')
         user_id = get_jwt_identity()
-        file_name = file.filename
+        file_name = str(uuid.uuid4()) + file.filename
         nueva_tarea = Tareas(
             fileName=file_name, newFormat=new_format, status='uploaded', usuario=user_id)
         db.session.add(nueva_tarea)

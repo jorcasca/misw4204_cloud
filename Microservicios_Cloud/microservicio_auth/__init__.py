@@ -1,5 +1,5 @@
 from flask import Flask
-from .modelos import db
+from modelos import db
 
 def create_app(config_name):
     app = Flask(__name__)  

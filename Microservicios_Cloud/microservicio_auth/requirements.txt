@@ -12,6 +12,7 @@ redis
 requests
 SQLAlchemy
 py7zr
-psycopg2-binary
+psycopg2-binary==2.9.1
 google-cloud-storage
 google-cloud-pubsub
+gunicorn
