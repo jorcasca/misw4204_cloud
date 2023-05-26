@@ -1,17 +1,16 @@
 # Requisitos
 
 - App Engine en GCP (WEB_SERVER y WORKER_SERVER)
-![image](https://github.com/jorcasca/misw4204_cloud/assets/31069035/fbe01bef-1791-4897-9d5c-29d6c994af69)
+![image](https://github.com/jorcasca/misw4204_cloud/assets/31069035/d581def6-c796-4061-981f-4a563c3b97d2)
 
-- Bucket en GCP (BUCKET)
-![image](https://github.com/jorcasca/misw4204_cloud/assets/31069035/59f8a4b1-b183-4765-867c-47c0ee570e99)
+- Bucket en GCP (BUCKET)  
+![image](https://github.com/jorcasca/misw4204_cloud/assets/31069035/e95630d8-e484-46f8-b4b7-ba7b6352cf86)
 
 - Message Service en GCP (PUB/SUB)  
-![image](https://github.com/jorcasca/misw4204_cloud/assets/31069035/5a86be38-0c55-4795-85fa-c88a4059f6b2)
+![image](https://github.com/jorcasca/misw4204_cloud/assets/31069035/ac6734ee-4b33-4dca-825f-acc970ed59a8)
 
 - Cloud SQL en GCP (POSTGRES_SERVER)  
-![image](https://github.com/jorcasca/misw4204_cloud/assets/31069035/d016ce56-4698-4533-8792-840de282b84c)
-
+![image](https://github.com/jorcasca/misw4204_cloud/assets/31069035/cc7a9ae0-c86a-4464-9179-8a11130cca62)
 
 Nota: La configuración de los puertos de IPs de las instancias (como 80 para WEB_SERVER y WORKER_SERVER, 5432 para POSTGRES_SERVER) deben estar establecidas en las reglas de firewall de GCP y reglas de conexión en caso de Cloud SQL.
 ![image](https://github.com/jorcasca/misw4204_cloud/assets/31069035/b3e76e06-8650-43b8-85af-eac023107e47)
@@ -108,4 +107,7 @@ gcloud app browse
 
 # 6. Evidencia
 Servicios en App Engine respondiendo correctamente:  
-![image](https://github.com/jorcasca/misw4204_cloud/assets/31069035/310fe658-b225-4f30-9a6b-435284b39c0d)
+![image](https://github.com/jorcasca/misw4204_cloud/assets/31069035/928aaece-f456-413a-80a6-4550540879a8)
+![image](https://github.com/jorcasca/misw4204_cloud/assets/31069035/09dc5828-8476-43f1-9e44-bf7e76a3a64c)
+![image](https://github.com/jorcasca/misw4204_cloud/assets/31069035/6630db2c-ee81-4d79-92ff-cb5b3111214b)
+
